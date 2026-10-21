@@ -9,6 +9,7 @@ import { createSession, destroySession, getSessionUser } from "@/lib/auth";
 import { clientId, rateLimit } from "@/lib/rate-limit";
 import { sendMail } from "@/lib/mail";
 import { logActivity } from "@/lib/activity";
+import { siteUrl } from "@/lib/site-url";
 
 export type AuthState = { error?: string; message?: string };
 
@@ -57,7 +58,7 @@ export async function forgotPasswordAction(_: AuthState, fd: FormData): Promise<
     const token = randomBytes(32).toString("base64url");
     await PasswordResetToken.deleteMany({ user: u._id, usedAt: null });
     await PasswordResetToken.create({ user: u._id, tokenHash: hashToken(token), expiresAt: new Date(Date.now() + 60 * 60 * 1000) });
-    const link = `${(process.env.APP_URL || "").replace(/\/$/, "")}/admin/reset-password?token=${token}`;
+    const link = `${siteUrl()}/admin/reset-password?token=${token}`;
     const sent = await sendMail(u.email, "GSI admin password reset", `A password reset was requested for your GSI admin account.\n\nReset link (valid for 1 hour, single use):\n${link}\n\nIf you did not request this, ignore this email.`);
     if (!sent) console.warn("Password reset requested but SMTP is not configured; no email sent.");
   }

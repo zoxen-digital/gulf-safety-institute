@@ -1,4 +1,5 @@
 import { getSiteData } from "@/lib/site-data";
+import { siteUrl } from "@/lib/site-url";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { Logo } from "@/components/site/Logo";
@@ -6,7 +7,7 @@ import { Logo } from "@/components/site/Logo";
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
   const data = await getSiteData();
   const s = data.settings;
-  const appUrl = process.env.APP_URL || "http://localhost:3000";
+  const appUrl = siteUrl();
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "EducationalOrganization",

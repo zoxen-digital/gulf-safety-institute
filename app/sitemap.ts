@@ -1,10 +1,11 @@
 import type { MetadataRoute } from "next";
 import { getSiteData } from "@/lib/site-data";
+import { siteUrl } from "@/lib/site-url";
 
 export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = (process.env.APP_URL || "http://localhost:3000").replace(/\/$/, "");
+  const base = siteUrl();
   const { categories } = await getSiteData();
   const fixed = ["", "/about", "/services", "/locations", "/contact", "/request-quote", "/verify", "/privacy-policy", "/terms"];
   return [

@@ -3,6 +3,7 @@ import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { SignJWT, jwtVerify } from "jose";
 import { connectDb } from "./db";
+import { siteUrl } from "./site-url";
 import { User, type Role } from "./models";
 import { can, type Actor, type Permission } from "./permissions";
 
@@ -83,7 +84,7 @@ export async function assertSameOrigin(req?: Request) {
   try {
     const o = new URL(origin);
     const allowed = new Set([host]);
-    if (process.env.APP_URL) allowed.add(new URL(process.env.APP_URL).host);
+    allowed.add(new URL(siteUrl()).host);
     if (!allowed.has(o.host)) throw new Error();
   } catch {
     throw new AuthError(403, "Cross-origin request rejected");

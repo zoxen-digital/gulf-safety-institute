@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Montserrat } from "next/font/google";
 import "./globals.css";
 import { getSettings } from "@/lib/site-data";
+import { siteUrl } from "@/lib/site-url";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const montserrat = Montserrat({ subsets: ["latin"], weight: ["600", "700", "800"], variable: "--font-montserrat", display: "swap" });
@@ -9,7 +10,7 @@ const montserrat = Montserrat({ subsets: ["latin"], weight: ["600", "700", "800"
 export async function generateMetadata(): Promise<Metadata> {
   const s = await getSettings();
   return {
-    metadataBase: new URL(process.env.APP_URL || "http://localhost:3000"),
+    metadataBase: new URL(siteUrl()),
     title: { default: s.seoTitle, template: `%s | ${s.instituteName}` },
     description: s.seoDescription,
     icons: { icon: s.faviconUrl || "/brand/gsi-icon.png" },

@@ -1,4 +1,4 @@
-﻿"use server";
+"use server";
 import { createHash } from "crypto";
 import { z } from "zod";
 import { connectDb, isDbConfigured } from "@/lib/db";
@@ -6,6 +6,7 @@ import { Course, GCC_COUNTRIES, Inquiry, Setting } from "@/lib/models";
 import { clientId, rateLimit } from "@/lib/rate-limit";
 import { sendMail } from "@/lib/mail";
 import { INQUIRY_TYPES } from "@/lib/inquiry";
+import { siteUrl } from "@/lib/site-url";
 
 export type InquiryState = { status: "idle" | "success" | "error"; message?: string; errors?: Record<string, string>; values?: Record<string, string> };
 
@@ -56,7 +57,7 @@ export async function submitInquiry(_prev: InquiryState, fd: FormData): Promise<
     await sendMail(
       to,
       `New ${d.type}: ${d.name}${d.company ? ` (${d.company})` : ""}`,
-      [`Name: ${d.name}`, `Company: ${d.company}`, `Email: ${d.email}`, `Phone: ${d.phone}`, `Country: ${d.country}`, `Type: ${d.type}`, `Course: ${course?.name || "-"}`, `Trainees: ${d.traineesCount || "-"}`, "", d.message, "", `Admin: ${process.env.APP_URL || ""}/admin/inquiries?id=${inq._id}`].join("\n"),
+      [`Name: ${d.name}`, `Company: ${d.company}`, `Email: ${d.email}`, `Phone: ${d.phone}`, `Country: ${d.country}`, `Type: ${d.type}`, `Course: ${course?.name || "-"}`, `Trainees: ${d.traineesCount || "-"}`, "", d.message, "", `Admin: ${siteUrl()}/admin/inquiries?id=${inq._id}`].join("\n"),
     );
     return { status: "success", message: "Thank you. Your inquiry has been received and our team will contact you shortly." };
   } catch (e) {

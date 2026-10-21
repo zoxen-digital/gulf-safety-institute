@@ -1,4 +1,4 @@
-﻿import "server-only";
+import "server-only";
 import { readFile } from "fs/promises";
 import path from "path";
 import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFImage, type PDFPage } from "pdf-lib";
@@ -8,6 +8,7 @@ import { binaryToBuffer, parseUploadUrl } from "./upload-core";
 import { displayStatus, maskIdentity } from "./verify-core";
 import type { FullRecord } from "./certificates";
 import type { SiteSettings } from "./catalog";
+import { siteUrl } from "./site-url";
 
 const NAVY = rgb(0x14 / 255, 0x29 / 255, 0x4f / 255);
 const NAVY_DARK = rgb(0x0b / 255, 0x1a / 255, 0x33 / 255);
@@ -21,7 +22,7 @@ const WHITE = rgb(1, 1, 1);
 export type PdfContext = "public" | "admin";
 
 export function verifyUrl(n: string) {
-  return `${(process.env.APP_URL || "http://localhost:3000").replace(/\/$/, "")}/verify/${encodeURIComponent(n)}`;
+  return `${siteUrl()}/verify/${encodeURIComponent(n)}`;
 }
 
 export async function qrPng(n: string) {
@@ -112,7 +113,7 @@ function idFor(rec: FullRecord, s: SiteSettings, ctx: PdfContext) {
 }
 
 function siteText(s: SiteSettings) {
-  return s.certificateWebsite || (process.env.APP_URL || "").replace(/^https?:\/\//, "").replace(/\/$/, "");
+  return s.certificateWebsite || siteUrl().replace(/^https?:\/\//, "");
 }
 
 /** A4 portrait certificate (page 1) followed by the wallet card (page 2). */
