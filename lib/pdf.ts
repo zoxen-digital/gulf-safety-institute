@@ -92,7 +92,10 @@ async function brandImages(doc: PDFDocument, s: SiteSettings) {
     const img = await embedStored(doc, u);
     if (img) accreditations.push(img);
   }
-  return { logo, icon, accreditations, stamp: await embedStored(doc, s.stampUrl), signature: await embedStored(doc, s.signatureUrl) };
+  // Uploaded stamp/signature win; otherwise the bundled GSI ones are used.
+  const stamp = (await embedStored(doc, s.stampUrl)) || (await embedStored(doc, "/brand/gsi-stamp.png"));
+  const signature = (await embedStored(doc, s.signatureUrl)) || (await embedStored(doc, "/brand/gsi-signature.png"));
+  return { logo, icon, accreditations, stamp, signature };
 }
 
 type Brand = Awaited<ReturnType<typeof brandImages>>;
