@@ -13,6 +13,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: { default: s.seoTitle, template: `%s | ${s.instituteName}` },
     description: s.seoDescription,
     icons: { icon: s.faviconUrl || "/brand/gsi-icon.png" },
+    verification: { google: "iM3trziljqta0EgqH1pXoXzta6VlgNrhoY6tgQYcSxc" },
     openGraph: { type: "website", siteName: s.instituteName, title: s.seoTitle, description: s.seoDescription, images: [s.home.heroImage] },
   };
 }
