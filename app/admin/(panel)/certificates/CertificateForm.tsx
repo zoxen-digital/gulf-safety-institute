@@ -118,7 +118,7 @@ export function CertificateForm({ v, courses, locations, trainers, approvers }: 
       <fieldset className="grid gap-5 rounded-[10px] border border-slate-200 bg-white p-5 md:grid-cols-2">
         <legend className="px-1 font-heading text-sm font-bold text-navy-dark">Certification</legend>
         <SelectField name="course" label="Course" value={course} onChange={(e) => setCourse(e.target.value)} options={courses} placeholder="Select course" required className="md:col-span-2" />
-        <TextField name="level" label="Level / Category / Equipment class" defaultValue={v.level} />
+        <TextField name="level" label="Category (free text)" defaultValue={v.level} placeholder="e.g. Level III, Up to 5 Ton" help="Type anything. Shown on the certificate and QR page." />
         <SelectField name="location" label="Training location" defaultValue={v.location} options={locations} placeholder="Select location" required />
         <TextField name="company" label="Company / Employer" defaultValue={v.company} />
         <TextField name="project" label="Project" defaultValue={v.project} />

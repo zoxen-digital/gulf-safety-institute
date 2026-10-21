@@ -19,7 +19,7 @@ export default async function CertificatesAdmin({ searchParams }: { searchParams
   await connectDb();
   const sp = await searchParams;
   const p = listParams(sp, "issueDate");
-  const fp = { q: p.q, status: sp.status, course: sp.course, category: sp.category, location: sp.location, company: sp.company, from: sp.from, to: sp.to };
+  const fp = { q: p.q, status: sp.status, course: sp.course, category: sp.category, from: sp.from, to: sp.to };
   const filter = await buildCertificateFilter(u, fp);
   const sortField = ["issueDate", "expiryDate", "certificateNumber", "createdAt"].includes(p.sort) ? p.sort : "issueDate";
   void Trainee;
@@ -45,10 +45,8 @@ export default async function CertificatesAdmin({ searchParams }: { searchParams
       <Panel>
         <FilterBar q={p.q} placeholder="Certificate no., name, ID, company">
           <FilterSelect name="status" label="Status" value={sp.status || ""} options={[{ value: "VALID", label: "Valid" }, { value: "EXPIRING", label: "Expiring (30 days)" }, { value: "EXPIRED", label: "Expired" }, { value: "SUSPENDED", label: "Suspended" }, { value: "REVOKED", label: "Revoked" }]} />
-          <FilterSelect name="category" label="Category" value={sp.category || ""} options={cats.map((c) => ({ value: String(c._id), label: `${c.code}. ${c.shortName || c.name}` }))} />
+          <div className="min-w-[180px]"><label htmlFor="flt-category" className="mb-1 block text-xs font-medium text-muted">Category</label><input id="flt-category" name="category" defaultValue={sp.category || ""} placeholder="Type any category" list="flt-category-list" className="input py-2.5" /><datalist id="flt-category-list">{cats.map((c) => <option key={String(c._id)} value={c.shortName || c.name} />)}</datalist></div>
           <FilterSelect name="course" label="Course" value={sp.course || ""} options={courses.map((c) => ({ value: String(c._id), label: c.name }))} />
-          <FilterSelect name="location" label="Location" value={sp.location || ""} options={locs.map((l) => ({ value: String(l._id), label: l.name }))} />
-          <div className="min-w-[140px]"><label htmlFor="flt-company" className="mb-1 block text-xs font-medium text-muted">Company</label><input id="flt-company" name="company" defaultValue={sp.company || ""} className="input py-2.5" /></div>
           <div><label htmlFor="flt-from" className="mb-1 block text-xs font-medium text-muted">Issued from</label><input id="flt-from" name="from" type="date" defaultValue={sp.from || ""} className="input py-2.5" /></div>
           <div><label htmlFor="flt-to" className="mb-1 block text-xs font-medium text-muted">Issued to</label><input id="flt-to" name="to" type="date" defaultValue={sp.to || ""} className="input py-2.5" /></div>
         </FilterBar>

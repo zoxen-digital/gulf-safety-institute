@@ -151,6 +151,14 @@ export const DEFAULT_SETTINGS = {
   logoUrl: "/brand/gsi-logo.png",
   faviconUrl: "/brand/gsi-icon.png",
   stampUrl: "",
+  // Certificate layout
+  signatureUrl: "",
+  signatureLabel: "Authorized Signature",
+  supervisionText: "",
+  certificateWebsite: "",
+  accreditationLogos: [] as string[],
+  // Client requirement: the QR landing page and PDFs show the full ID number.
+  publicShowFullId: true,
   phone: "",
   whatsapp: "",
   email: "",

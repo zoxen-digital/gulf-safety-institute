@@ -53,7 +53,7 @@ export type PublicResult =
       kind: "VALID" | "EXPIRED";
       certificateNumber: string;
       fullName: string;
-      maskedId: string;
+      idDisplay: string;
       nationality: string;
       photoUrl: string;
       employer: string;
@@ -71,7 +71,7 @@ export type PublicResult =
 const iso = (d?: Date | null) => (d ? new Date(d).toISOString().slice(0, 10) : "");
 
 /** Explicit allow-listed DTO. Never spread the record into the result. */
-export function toPublicResult(rec: CertificateRecord | null, searched: string, now = new Date()): PublicResult {
+export function toPublicResult(rec: CertificateRecord | null, searched: string, now = new Date(), opts: { showFullId?: boolean } = {}): PublicResult {
   if (!rec) return { kind: "NOT_FOUND", searched };
   const s = displayStatus(rec.status, rec.expiryDate, now);
   if (s === "REVOKED" || s === "SUSPENDED") return { kind: s, certificateNumber: rec.certificateNumber, fullName: rec.trainee.fullName };
@@ -79,7 +79,7 @@ export function toPublicResult(rec: CertificateRecord | null, searched: string, 
     kind: s,
     certificateNumber: rec.certificateNumber,
     fullName: rec.trainee.fullName,
-    maskedId: maskIdentity(rec.trainee.idNumber),
+    idDisplay: opts.showFullId ? rec.trainee.idNumber : maskIdentity(rec.trainee.idNumber),
     nationality: rec.trainee.nationality || "",
     photoUrl: rec.trainee.photoUrl || "",
     employer: rec.company || rec.trainee.company || "",

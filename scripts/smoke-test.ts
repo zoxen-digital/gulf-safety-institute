@@ -51,7 +51,7 @@ async function main() {
 
   console.log("Verification");
   const v1 = await (await get(`/verify?q=demo-${Y}-000001`)).text();
-  ok(v1.includes("VERIFIED â€“ VALID") && v1.includes("DE*******01"), "valid certificate (case-insensitive) with masked ID");
+  ok(v1.includes("VERIFIED – VALID") && v1.includes("DE*******01"), "valid certificate (case-insensitive) with masked ID");
   ok(!v1.includes("DEMO0000001"), "full ID number not in public HTML");
   const v2 = await (await get(`/verify/DEMO-${Y}-000002`)).text();
   ok(v2.includes("EXPIRED") && v2.includes("expired on"), "expired certificate");

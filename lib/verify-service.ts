@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { connectDb, isDbConfigured } from "./db";
 import { VerificationLog } from "./models";
 import { loadCertificate } from "./certificates";
+import { getSettings } from "./site-data";
 import { clientId, rateLimit } from "./rate-limit";
 import { displayStatus, normalizeCertificateNumber, toPublicResult, type PublicResult } from "./verify-core";
 
@@ -23,7 +24,8 @@ export async function publicLookup(input: string | undefined): Promise<LookupOut
     const cid = await clientId();
     if (!(await rateLimit("verify", cid, 30, 60))) return { kind: "RATE_LIMITED" };
     const rec = await loadCertificate({ certificateNumber: number });
-    const result = toPublicResult(rec, number);
+    const settings = await getSettings();
+    const result = toPublicResult(rec, number, new Date(), { showFullId: settings.publicShowFullId });
     const ua = (await headers()).get("user-agent")?.slice(0, 300) || "";
     await VerificationLog.create({
       searchedNumber: number,

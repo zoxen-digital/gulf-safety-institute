@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { AlertOctagon, BadgeCheck, Clock3, Download, FileWarning, IdCard, SearchX, TriangleAlert } from "lucide-react";
+import { AlertOctagon, BadgeCheck, Clock3, Download, FileWarning, IdCard, QrCode, SearchX, TriangleAlert } from "lucide-react";
 import { SafeImage } from "@/components/SafeImage";
 import type { LookupOutcome } from "@/lib/verify-service";
 import { PrintButton } from "./PrintButton";
@@ -21,7 +21,7 @@ function Notice({ tone, icon: Icon, title, children }: { tone: "danger" | "warni
   );
 }
 
-export function VerifyResult({ outcome }: { outcome: LookupOutcome }) {
+export function VerifyResult({ outcome, instituteName }: { outcome: LookupOutcome; instituteName: string }) {
   if (outcome.kind === "EMPTY") return null;
   if (outcome.kind === "INVALID")
     return <Notice tone="danger" icon={SearchX} title="Invalid certificate number">Certificate numbers contain only letters, digits and dashes, for example GSI-2026-000123. Please check and try again.</Notice>;
@@ -50,53 +50,54 @@ export function VerifyResult({ outcome }: { outcome: LookupOutcome }) {
       </Notice>
     );
 
+
   const valid = r.kind === "VALID";
+  const long = (iso: string) => (iso ? new Date(iso).toLocaleDateString("en-GB", { day: "2-digit", month: "long", year: "numeric", timeZone: "UTC" }).replace(/ /g, "-") : "-");
   const rows: [string, string][] = [
-    ["Full name", r.fullName],
-    ["ID / Iqama / Passport", r.maskedId],
-    ["Nationality", r.nationality],
-    ["Employer", r.employer],
-    ["Course", r.course],
-    ["Category", r.category],
-    ["Level / Equipment class", r.level],
-    ["Certificate No.", r.certificateNumber],
-    ["Issue date", fmt(r.issueDate)],
-    ["Expiry date", fmt(r.expiryDate)],
-    ["Training location", r.location],
-    ["Trainer", r.trainer],
-    ["Approved by", r.approver],
-  ].filter(([, v]) => v) as [string, string][];
+    ["Certificate No", r.certificateNumber],
+    ["Name", r.fullName.toUpperCase()],
+    ["Company Name", (r.employer || "Individual").toUpperCase()],
+    ["ID No", r.idDisplay],
+    ["Course Name", r.course.toUpperCase()],
+    ...(r.level ? ([["Category", r.level.toUpperCase()]] as [string, string][]) : []),
+    ["Issue Date", long(r.issueDate)],
+    ["Expiry Date", long(r.expiryDate)],
+  ];
   const n = encodeURIComponent(r.certificateNumber);
 
   return (
     <article className="card overflow-hidden" aria-labelledby="res-title">
       {r.isDemo && <p className="bg-danger px-6 py-2 text-center text-xs font-bold tracking-wide text-white">DEMO RECORD FOR TESTING - NOT A REAL CREDENTIAL</p>}
-      <header className={`flex flex-wrap items-center justify-between gap-3 px-6 py-4 ${valid ? "bg-success/10" : "bg-warning/10"}`}>
-        <h2 id="res-title" className={`flex items-center gap-2 font-heading text-lg font-extrabold ${valid ? "text-success" : "text-warning"}`}>
-          {valid ? <BadgeCheck className="h-6 w-6" aria-hidden /> : <FileWarning className="h-6 w-6" aria-hidden />}
-          {valid ? "VERIFIED – VALID" : "EXPIRED"}
+      <header className="px-5 pt-6 text-center sm:px-8">
+        <p className="font-heading text-xl font-extrabold uppercase tracking-wide text-navy-dark sm:text-2xl">{instituteName}</p>
+        <h2 id="res-title" className={`mt-4 flex items-center justify-center gap-2 rounded-md border px-4 py-3 text-base font-semibold ${valid ? "border-success/30 bg-success/10 text-success" : "border-warning/30 bg-warning/10 text-warning"}`}>
+          {valid ? <><span>Certificate Is Verified</span><BadgeCheck className="h-6 w-6" aria-hidden /></> : <><FileWarning className="h-6 w-6" aria-hidden /><span>Certificate Expired on {long(r.expiryDate)}</span></>}
         </h2>
-        <p className="text-xs text-muted">Verified on {new Date(outcome.verifiedAt).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Riyadh" })} (KSA)</p>
       </header>
-      {!valid && <p className="border-b border-warning/20 bg-warning/5 px-6 py-3 text-sm text-ink">This certificate was issued by GSI but expired on <strong>{fmt(r.expiryDate)}</strong>.</p>}
-      <div className="grid gap-6 p-6 sm:grid-cols-[150px_1fr] sm:p-8">
-        <div className="relative mx-auto aspect-[3/4] w-[150px] overflow-hidden rounded-md border border-black/10 bg-cream">
-          <SafeImage src={r.photoUrl} alt={`Photo of ${r.fullName}`} fill sizes="150px" className="object-cover" />
-        </div>
-        <dl className="grid gap-x-6 gap-y-3 text-sm sm:grid-cols-2">
+      <div className="no-print flex flex-wrap gap-2 px-5 pt-4 sm:px-8">
+        <a href={`/api/public/certificates/${n}/qr`} download={`QR-${r.certificateNumber}.png`} className="btn-navy btn-sm"><QrCode className="h-4 w-4" aria-hidden /> Download QR Code</a>
+        <a href={`/api/public/certificates/${n}/certificate`} className="btn-outline btn-sm"><Download className="h-4 w-4" aria-hidden /> Certificate (PDF)</a>
+        <a href={`/api/public/certificates/${n}/id-card`} className="btn-outline btn-sm"><IdCard className="h-4 w-4" aria-hidden /> ID Card (PDF)</a>
+        <PrintButton />
+      </div>
+      <div className="grid gap-6 px-5 py-6 sm:grid-cols-[1fr_170px] sm:px-8">
+        <dl className="space-y-3">
           {rows.map(([k, v]) => (
-            <div key={k}>
-              <dt className="text-xs font-medium uppercase tracking-wider text-muted">{k}</dt>
-              <dd className={`mt-0.5 font-semibold ${k === "Certificate No." ? "font-mono text-navy" : "text-ink"}`}>{v}</dd>
+            <div key={k} className="text-[17px] leading-snug sm:text-lg">
+              <dt className="inline font-heading font-bold text-navy-dark">{k}:</dt>{" "}
+              <dd className="inline break-words font-semibold text-ink">{v}</dd>
             </div>
           ))}
         </dl>
+        <div className="flex flex-row items-end justify-end gap-4 sm:flex-col sm:items-end">
+          <div className="relative aspect-[3/4] w-[140px] overflow-hidden rounded-md bg-cream sm:w-[170px]">
+            <SafeImage src={r.photoUrl} alt={`Photo of ${r.fullName}`} fill sizes="170px" className="object-cover" />
+          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={`/api/public/certificates/${n}/qr`} alt={`QR code for certificate ${r.certificateNumber}`} width={120} height={120} className="h-[110px] w-[110px] sm:h-[120px] sm:w-[120px]" />
+        </div>
       </div>
-      <footer className="no-print flex flex-wrap gap-3 border-t border-black/5 bg-cream/60 px-6 py-4">
-        <a href={`/api/public/certificates/${n}/certificate`} className="btn-navy btn-sm"><Download className="h-4 w-4" aria-hidden /> Certificate (PDF)</a>
-        <a href={`/api/public/certificates/${n}/id-card`} className="btn-outline btn-sm"><IdCard className="h-4 w-4" aria-hidden /> ID Card (PDF)</a>
-        <PrintButton />
-      </footer>
+      <p className="border-t border-black/5 px-5 py-3 text-xs text-muted sm:px-8">Verified on {new Date(outcome.verifiedAt).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Riyadh" })} (KSA) from {instituteName} records.</p>
     </article>
   );
 }

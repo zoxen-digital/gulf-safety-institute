@@ -44,7 +44,7 @@ export default async function LocationsAdmin({ searchParams }: { searchParams: P
                     </div>
                   </td>
                   <td className={td}>{l.city}, {l.country}</td>
-                  <td className={`${td} text-xs text-muted`}>{[l.phone, l.email].filter(Boolean).join(" Â· ") || "-"}</td>
+                  <td className={`${td} text-xs text-muted`}>{[l.phone, l.email].filter(Boolean).join(" · ") || "-"}</td>
                   <td className={td}><Badge value={l.isActive ? "ACTIVE" : "INACTIVE"} /></td>
                   <td className={td}>{l.sortOrder}</td>
                   <td className={`${td} text-right`}>

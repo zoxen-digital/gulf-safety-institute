@@ -41,7 +41,14 @@ test("valid result exposes only allow-listed fields", () => {
   assert.equal(r.kind, "VALID");
   const json = JSON.stringify(r);
   for (const secret of ["2329148072", "+966500000000", "x@y.z", "internal secret", "secret reason", "1990"]) assert.ok(!json.includes(secret), `leaked ${secret}`);
-  if (r.kind === "VALID") assert.equal(r.maskedId, "23******72");
+  if (r.kind === "VALID") assert.equal(r.idDisplay, "23******72");
+});
+
+test("full ID only when explicitly enabled", () => {
+  const r = toPublicResult(base, base.certificateNumber, now, { showFullId: true });
+  if (r.kind === "VALID") assert.equal(r.idDisplay, "2329148072");
+  const json = JSON.stringify(r);
+  for (const secret of ["+966500000000", "x@y.z", "internal secret", "1990"]) assert.ok(!json.includes(secret));
 });
 
 test("revoked and suspended results show only number, name and status", () => {

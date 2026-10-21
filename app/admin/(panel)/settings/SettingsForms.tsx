@@ -1,7 +1,7 @@
 "use client";
 import { useActionState, useEffect, useRef } from "react";
 import { Loader2, Sparkles } from "lucide-react";
-import { ActionForm, SubmitButton, TextArea, TextField } from "@/components/admin/Form";
+import { ActionForm, Checkbox, SubmitButton, TextArea, TextField } from "@/components/admin/Form";
 import { AdminImageField } from "@/components/admin/AdminImageField";
 import { toast } from "@/components/admin/Toast";
 import type { SiteSettings } from "@/lib/catalog";
@@ -37,6 +37,24 @@ export function SettingsForm({ s }: { s: SiteSettings }) {
         <AdminImageField name="logoUrl" label="Logo" folder="misc" defaultValue={s.logoUrl} fit="contain" aspect="aspect-square max-w-[140px]" help="Square PNG recommended. PNG/JPEG logos are also embedded in PDFs." />
         <AdminImageField name="faviconUrl" label="Favicon" folder="misc" defaultValue={s.faviconUrl} fit="contain" aspect="aspect-square max-w-[90px]" help="Square PNG, 64px or larger." />
         <AdminImageField name="stampUrl" label="Stamp / seal" folder="misc" defaultValue={s.stampUrl} fit="contain" aspect="aspect-square max-w-[140px]" help="Transparent PNG. Printed on certificates and ID cards." />
+      </Section>
+      <Section title="Certificate & ID card layout">
+        <TextField name="supervisionText" label='"Under the supervision of" text' defaultValue={s.supervisionText} className="md:col-span-2" help="Optional. e.g. the authority you train under. Leave blank to hide the line. Only enter bodies you are actually approved by." />
+        <TextField name="certificateWebsite" label="Website shown on certificate" defaultValue={s.certificateWebsite} placeholder="www.gulfsafetyinstitute.com" help="Leave blank to use the site address." />
+        <TextField name="signatureLabel" label="Signature caption" defaultValue={s.signatureLabel} />
+        <AdminImageField name="signatureUrl" label="Authorized signature" folder="misc" defaultValue={s.signatureUrl} fit="contain" aspect="aspect-[3/1] max-w-[220px]" help="Transparent PNG. Printed in the centre of the certificate." />
+        <div className="flex items-end">
+          <Checkbox name="publicShowFullId" label="Show full ID / Iqama number on QR page and PDFs" defaultChecked={s.publicShowFullId} help="Off = show a masked number (e.g. 26******77)." />
+        </div>
+        <div className="md:col-span-2">
+          <p className="label">Accreditation / partner logos (bottom row)</p>
+          <p className="mb-3 text-xs text-muted">Up to 6 logos, PNG or JPEG. Upload only logos of bodies that have approved GSI.</p>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {[0, 1, 2, 3, 4, 5].map((i) => (
+              <AdminImageField key={i} name={`accreditationLogos.${i}`} label={`Logo ${i + 1}`} folder="misc" defaultValue={s.accreditationLogos[i] || ""} fit="contain" aspect="aspect-[5/2] max-w-[200px]" help="PNG or JPEG" />
+            ))}
+          </div>
+        </div>
       </Section>
       <Section title="Contact details">
         <TextField name="phone" label="Phone" defaultValue={s.phone} />

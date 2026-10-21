@@ -34,7 +34,7 @@ export default async function CertificateDetail({ params }: { params: Promise<{ 
     ["Trainee", rec.trainee.fullName], ["ID / Iqama / Passport", rec.trainee.idNumber], ["Nationality", rec.trainee.nationality || ""],
     ["Course", rec.course.name], ["Category", rec.course.categoryName || ""], ["Level / Class", rec.level || ""],
     ["Company", rec.company || ""], ["Project", rec.project || ""], ["Location", [rec.location?.name, rec.location?.country].filter(Boolean).join(", ")],
-    ["Training dates", rec.trainingStartDate ? `${fmtDate(rec.trainingStartDate)} â€“ ${fmtDate(rec.trainingEndDate)}` : ""],
+    ["Training dates", rec.trainingStartDate ? `${fmtDate(rec.trainingStartDate)} – ${fmtDate(rec.trainingEndDate)}` : ""],
     ["Issue date", fmtDate(rec.issueDate)], ["Expiry date", fmtDate(rec.expiryDate)], ["Trainer", rec.trainer?.name || ""], ["Approved by", rec.approver?.name || ""],
     ["Enrollment No.", rec.enrollmentNumber || ""],
   ];
@@ -43,7 +43,7 @@ export default async function CertificateDetail({ params }: { params: Promise<{ 
     <>
       <PageHeader
         title={rec.certificateNumber}
-        description={`Issued ${fmtDate(rec.issueDate)} Â· last updated ${fmtDate(raw?.updatedAt)}`}
+        description={`Issued ${fmtDate(rec.issueDate)} · last updated ${fmtDate(raw?.updatedAt)}`}
         actions={can(u.role, "certificates.edit") && <Link href={`/admin/certificates/${id}/edit`} className="btn-outline"><Pencil className="h-4 w-4" aria-hidden /> Edit</Link>}
       />
       {rec.isDemo && <p className="mb-4 rounded-md bg-danger px-4 py-2 text-sm font-semibold text-white">Demo record for testing. Not a real credential.</p>}

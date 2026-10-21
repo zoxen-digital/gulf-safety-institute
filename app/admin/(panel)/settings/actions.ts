@@ -47,13 +47,26 @@ export async function saveSettings(_: ActionResult, fd: FormData): Promise<Actio
     for (const k of HOME_IMAGE_KEYS) home[k] = str(fd, `home.${k}`, 400) || DEFAULT_SETTINGS.home[k];
     const stats = [0, 1, 2, 3].map((i) => ({ value: str(fd, `stats.${i}.value`, 20) || DEFAULT_SETTINGS.stats[i].value, label: str(fd, `stats.${i}.label`, 60) || DEFAULT_SETTINGS.stats[i].label }));
 
+    const cert = z
+      .object({
+        signatureUrl: img,
+        signatureLabel: z.string().max(60),
+        supervisionText: z.string().max(160),
+        certificateWebsite: z.string().max(80),
+      })
+      .parse({ signatureUrl: str(fd, "signatureUrl"), signatureLabel: str(fd, "signatureLabel") || "Authorized Signature", supervisionText: str(fd, "supervisionText"), certificateWebsite: str(fd, "certificateWebsite") });
+    const accreditationLogos = [0, 1, 2, 3, 4, 5].map((i) => str(fd, `accreditationLogos.${i}`, 400)).filter(Boolean);
+    const publicShowFullId = fd.get("publicShowFullId") === "on";
+
     const prev = ((await Setting.findOne({ key: "site" }).lean())?.value || {}) as Partial<SiteSettings>;
-    const value = { ...s, social, home, stats };
+    const value = { ...s, ...cert, accreditationLogos, publicShowFullId, social, home, stats };
     await Setting.updateOne({ key: "site" }, { $set: { value } }, { upsert: true });
 
     // Remove replaced images only after the new settings are saved.
     for (const k of IMAGE_KEYS) if (prev[k] && prev[k] !== value[k]) await deleteStoredUploadByUrl(prev[k]);
     for (const k of HOME_IMAGE_KEYS) if (prev.home?.[k] && prev.home[k] !== home[k]) await deleteStoredUploadByUrl(prev.home[k]);
+    if (prev.signatureUrl && prev.signatureUrl !== cert.signatureUrl) await deleteStoredUploadByUrl(prev.signatureUrl);
+    for (const old of prev.accreditationLogos || []) if (!accreditationLogos.includes(old)) await deleteStoredUploadByUrl(old);
 
     await logActivity(u, "update", "Setting", "site");
     revalidateSite();

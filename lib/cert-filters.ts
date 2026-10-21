@@ -2,7 +2,7 @@ import "server-only";
 import { isValidObjectId, Types } from "mongoose";
 import type { SessionUser } from "./auth";
 import { certificateScope, escapeRegex, toDate } from "./admin";
-import { Course, Trainee } from "./models";
+import { Category, Course, Trainee } from "./models";
 
 export type CertFilterParams = { q?: string; status?: string; course?: string; category?: string; location?: string; company?: string; from?: string; to?: string };
 
@@ -16,6 +16,13 @@ export async function buildCertificateFilter(u: SessionUser, p: CertFilterParams
   else if (p.status === "SUSPENDED" || p.status === "REVOKED") and.push({ status: p.status });
   if (p.course && isValidObjectId(p.course)) and.push({ course: new Types.ObjectId(p.course) });
   if (p.category && isValidObjectId(p.category)) and.push({ course: { $in: await Course.distinct("_id", { category: new Types.ObjectId(p.category) }) } });
+  else if (p.category) {
+    // Free-text category: matches the category name/code, the course name, or the certificate's own category/level text.
+    const r = { $regex: escapeRegex(p.category.slice(0, 80)), $options: "i" };
+    const cats = await Category.distinct("_id", { $or: [{ name: r }, { shortName: r }, { code: r }] });
+    const courses = await Course.distinct("_id", { $or: [{ name: r }, { category: { $in: cats } }] });
+    and.push({ $or: [{ course: { $in: courses } }, { level: r }] });
+  }
   // Location filter narrows within scope; the scope clause above still applies.
   if (p.location && isValidObjectId(p.location)) and.push({ location: new Types.ObjectId(p.location) });
   if (p.company) and.push({ company: { $regex: escapeRegex(p.company.slice(0, 80)), $options: "i" } });
