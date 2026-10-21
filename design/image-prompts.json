@@ -1,0 +1,105 @@
+{
+  "generator": "Built-in image_gen",
+  "note": "AI-generated illustrative marketing imagery, not documentary photos of GISTRA personnel or premises. Original logo and user uploads are preserved. Course pages reuse the five category images.",
+  "assets": [
+    {
+      "key": "hero",
+      "name": "hero-refinery",
+      "prompt": "Photorealistic premium corporate industrial safety academy website photography, GISTRA visual theme navy workwear, white safety helmets, restrained golden-hour highlights, authentic industrial materials, cinematic but natural, sharp professional editorial photography. No text, no graphics, no watermark, no fake logo. Wide 16:9 landscape website hero. Modern Gulf oil refinery at golden hour, detailed distillation columns and pipework. A safety engineer in white hard hat, safety glasses and navy flame-resistant coveralls with silver reflective strips seen from behind on RIGHT third, looking toward refinery. Left half uncluttered darker blue refinery atmosphere for headline overlay. Waist-up engineer, realistic anatomy, safe observation walkway with railing. Warm gold sky, navy industrial tones.",
+      "url": "/images/gistra/hero-refinery.webp",
+      "width": 1672,
+      "height": 941,
+      "bytes": 167316
+    },
+    {
+      "key": "practical",
+      "name": "practical-training",
+      "prompt": "Photorealistic premium corporate industrial safety academy website photography, GISTRA visual theme navy workwear, white safety helmets, restrained golden-hour highlights, authentic industrial materials, cinematic but natural, sharp professional editorial photography. No text, no graphics, no watermark, no fake logo. Landscape 3:2 editorial photo. Experienced safety instructor demonstrates a locked isolation valve to three attentive trainees in full PPE at a clean industrial training facility. White hard hats, navy workwear, eye protection, gloves. Eye-level, medium shot, faces natural, instructor's demonstration clear, clean steel pipes in background, warm daylight. No hazardous operation being performed.",
+      "url": "/images/gistra/practical-training.webp",
+      "width": 1440,
+      "height": 960,
+      "bytes": 135860
+    },
+    {
+      "key": "cta",
+      "name": "corporate-training",
+      "prompt": "Photorealistic premium corporate industrial safety academy website photography, GISTRA visual theme navy workwear, white safety helmets, restrained golden-hour highlights, authentic industrial materials, cinematic but natural, sharp professional editorial photography. No text, no graphics, no watermark, no fake logo. Very wide landscape corporate training banner photograph. Refinery at blue hour with warm gold plant lighting. One instructor and two workers in navy reflective coveralls and white hard hats seen on far RIGHT, safe observation walkway. Spacious darker blue industrial scene across LEFT two thirds, elegant composition for text overlay, cinematic realistic light.",
+      "url": "/images/gistra/corporate-training.webp",
+      "width": 1920,
+      "height": 707,
+      "bytes": 178016
+    },
+    {
+      "key": "about",
+      "name": "about-academy",
+      "prompt": "Use case: photorealistic-natural. Standalone landscape 3:2 premium Gulf industrial safety academy website photo. Professional realistic industrial editorial photography, coherent navy-blue and muted golden color grade, correct personal protective equipment, natural human anatomy. No typography, no logo, no watermark, not a collage or webpage. A diverse group of four safety instructors and trainees having a calm briefing at a modern industrial training facility beside stainless pipework and a yellow training crane. White helmets, navy reflective coveralls, safety glasses, boots, gloves. Subjects on right half with industrial architecture extending to left for website page-header text. Authentic Gulf industrial setting, late afternoon gold daylight, welcoming competent teamwork, wide landscape framing.",
+      "url": "/images/gistra/about-academy.webp",
+      "width": 1440,
+      "height": 960,
+      "bytes": 203322
+    },
+    {
+      "key": "catA",
+      "name": "site-safety",
+      "prompt": "Use case: photorealistic-natural. One standalone landscape 3:2 website photograph for a premium Gulf industrial safety training academy, coherent navy, steel gray and restrained gold color grade. Professional realistic editorial photo, natural anatomy, correct PPE, crisp detail. No text, no logos, no watermark, no collage, not a webpage. Two safety supervisors inspecting steel pipework from a safe refinery walkway, one points at a flange while the other holds an unmarked inspection clipboard. White hard hats, safety eyewear, navy reflective coveralls, one lime high visibility vest, gloves. Medium shot with subjects near center for card cropping. Warm morning light on clean industrial steel.",
+      "url": "/images/gistra/site-safety.webp",
+      "width": 1440,
+      "height": 960,
+      "bytes": 153564
+    },
+    {
+      "key": "catB",
+      "name": "confined-space",
+      "prompt": "Use case: photorealistic-natural. One standalone landscape 3:2 website photograph for a premium Gulf industrial safety training academy, coherent navy, steel gray and restrained gold color grade. Professional realistic editorial photo, natural anatomy, correct PPE, crisp detail. No text, no logos, no watermark, no collage, not a webpage. Controlled confined-space safety training at an above-ground training vessel. A worker wearing a full-face breathing apparatus, navy protective coveralls, helmet and gloves stands just outside a large circular tank access opening with a fully equipped attendant. Air cylinder and gas monitor visible. Both subjects outside the opening on safe ground, clear supervised practice environment. Centered composition useful for course card cropping. Soft natural daylight, realistic steel textures.",
+      "url": "/images/gistra/confined-space.webp",
+      "width": 1440,
+      "height": 960,
+      "bytes": 151146
+    },
+    {
+      "key": "catC",
+      "name": "offshore-marine",
+      "prompt": "Use case: photorealistic-natural. One standalone landscape 3:2 website photograph for a premium Gulf industrial safety training academy, coherent navy, steel gray and restrained gold color grade. Professional realistic editorial photo, natural anatomy, correct PPE, crisp detail. No text, no logos, no watermark, no collage, not a webpage. Modern offshore oil platform in the calm Gulf at golden hour. Navy sea, ochre-yellow steel gantries and pipes. In foreground one offshore worker in white hardhat, navy reflective coveralls and orange life jacket looks at the platform from a protected pier with railings. Landscape editorial composition, worker and platform within central two thirds for card crop, realistic scale, premium detailed photographic image.",
+      "url": "/images/gistra/offshore-marine.webp",
+      "width": 1440,
+      "height": 960,
+      "bytes": 227562
+    },
+    {
+      "key": "catD",
+      "name": "heavy-equipment",
+      "prompt": "Use case: photorealistic-natural. Standalone landscape 3:2 premium Gulf industrial safety academy website photo. Professional realistic industrial editorial photography, coherent navy-blue and muted golden color grade, correct personal protective equipment, natural human anatomy. No typography, no logo, no watermark, not a collage or webpage. A large yellow mobile crane on a clean fenced industrial operator training ground, boom raised with hook hanging freely and no suspended load. A trainer and rigger in navy reflective workwear, white hard hats, glasses and gloves inspect from a designated safe area outside the lifting zone. Yellow crane fills middle background, workers in central foreground, detailed realistic heavy machinery, warm clear morning.",
+      "url": "/images/gistra/heavy-equipment.webp",
+      "width": 1440,
+      "height": 960,
+      "bytes": 141838
+    },
+    {
+      "key": "catE",
+      "name": "emergency-response",
+      "prompt": "Use case: photorealistic-natural. Standalone landscape 3:2 premium Gulf industrial safety academy website photo. Professional realistic industrial editorial photography, coherent navy-blue and muted golden color grade, correct personal protective equipment, natural human anatomy. No typography, no logo, no watermark, not a collage or webpage. Two industrial fire response trainees and a supervising instructor operating a fire hose on a controlled outdoor fire-training pad. Full navy turnout gear with reflective gold stripes, helmets, gloves, visors and breathing apparatus. Small controlled training flame behind a steel barrier in background, visible hose and water spray, safe supervised training, photographic action with clear human detail, centered composition for course cards.",
+      "url": "/images/gistra/emergency-response.webp",
+      "width": 1440,
+      "height": 960,
+      "bytes": 222746
+    },
+    {
+      "key": "khobar",
+      "name": "al-khobar",
+      "prompt": "Use case: photorealistic-natural. One premium landscape 3:2 corporate website location illustration in photographic style. Navy blue water and sky, warm muted gold light, realistic architecture, polished natural editorial photography. This is an illustrative regional scene, not a photo of a specific company's premises. No text, no signs, no logos, no watermark. Al Khobar inspired Eastern Province Saudi Arabian coastal cityscape at sunset, palm-lined corniche curving beside calm Gulf water, plausible modern midrise waterfront buildings and a few restrained taller towers in the distance. Authentic Saudi coastal atmosphere, no recognizable invented landmark, no Dubai skyline, no Burj Khalifa, no Riyadh Kingdom tower, no office branding. Wide waterfront composition, warm ivory buildings, golden lamps reflected on dark blue sea.",
+      "url": "/images/gistra/al-khobar.webp",
+      "width": 1440,
+      "height": 960,
+      "bytes": 229756
+    },
+    {
+      "key": "jubail",
+      "name": "jubail",
+      "prompt": "Use case: photorealistic-natural. One premium landscape 3:2 corporate website location illustration in photographic style. Navy blue water and sky, warm muted gold light, realistic architecture, polished natural editorial photography. This is an illustrative regional scene, not a photo of a specific company's premises. No text, no signs, no logos, no watermark. Jubail inspired Saudi Arabian industrial waterfront at blue hour. A carefully arranged modern petrochemical complex with distillation towers, steel piping, tanks and warm golden plant lights, viewed across a calm navy coastal inlet. Clean industrial port atmosphere, no company branding or implied specific training facility, realistic engineering scale, premium landscape composition with plant towers centered, golden light reflections.",
+      "url": "/images/gistra/jubail.webp",
+      "width": 1440,
+      "height": 960,
+      "bytes": 197528
+    }
+  ]
+}

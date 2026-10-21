@@ -1,0 +1,9 @@
+{
+  "tool": "Built-in image_gen",
+  "prompt": "Use case: background-extraction. Edit ONLY the attached GSi GULF SAFETY INSTITUTE logo image (the latest input image). Remove its white/off-white photographic background completely to genuine alpha transparency. Keep the existing exact logo, shield, compass, star, wave details, navy, blue and gold colors, and all original lettering EXACTLY unchanged: 'GSi', 'GULF SAFETY', 'INSTITUTE'. Do not redraw, reinterpret, rebrand, alter typography, fix capitalization or add anything. Remove background from gaps and open negative spaces between design elements and lettering too while preserving intended white internal design strokes. Tight-crop the canvas around the complete horizontal logo lockup, with only a very small 8px transparent safety margin on all sides. Crisp smooth edges, no halo or shadow, no checkerboard baked into the image, no backdrop. Deliver a high-resolution transparent PNG of the isolated original full logo, approximately 2:1 aspect ratio. This is a precise logo extraction, not a new logo design.",
+  "outputs": [
+    "public/brand/gsi-logo.png",
+    "public/brand/gsi-icon.png"
+  ],
+  "processing": "Transparent-edge trim, 6px padding, PNG optimization; compact shield crop for favicon/admin sidebar."
+}

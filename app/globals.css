@@ -1,0 +1,70 @@
+﻿@import "tailwindcss";
+
+@theme {
+  --color-navy: #14294f;
+  --color-navy-dark: #0b1a33;
+  --color-gold: #c9a54c;
+  --color-gold-light: #e3c77e;
+  --color-cream: #f6f3ec;
+  --color-ink: #1c2433;
+  --color-muted: #6b7280;
+  --color-success: #16a34a;
+  --color-warning: #d97706;
+  --color-danger: #dc2626;
+  --font-heading: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  --navy: #14294f;
+  --navy-dark: #0b1a33;
+  --gold: #c9a54c;
+  --gold-light: #e3c77e;
+  --cream: #f6f3ec;
+  --white: #ffffff;
+  --text: #1c2433;
+  --muted: #6b7280;
+  --success: #16a34a;
+  --warning: #d97706;
+  --danger: #dc2626;
+}
+
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body { background: var(--white); color: var(--text); font-family: var(--font-sans); overflow-x: hidden; }
+h1, h2, h3, h4, .font-heading { font-family: var(--font-heading); letter-spacing: -0.01em; }
+
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+@utility container-x { @apply mx-auto w-full max-w-[1240px] px-4 sm:px-6 lg:px-8; }
+@utility eyebrow {
+  @apply inline-flex items-center gap-3 text-[11px] sm:text-xs font-semibold tracking-[0.16em] uppercase text-gold;
+  &::before { content: ""; display: block; height: 2px; width: 2rem; background: var(--gold); }
+}
+@utility btn { @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-3 text-sm font-semibold transition duration-200 disabled:cursor-not-allowed disabled:opacity-60; }
+@utility btn-gold { @apply btn bg-gold text-navy-dark hover:bg-gold-light; }
+@utility btn-navy { @apply btn bg-navy text-white hover:bg-navy-dark; }
+@utility btn-outline-light { @apply btn border border-white bg-white text-navy hover:bg-cream; }
+@utility btn-outline { @apply btn border border-navy/20 bg-white text-navy hover:border-navy; }
+@utility btn-danger { @apply btn bg-danger text-white hover:bg-red-700; }
+@utility btn-sm { @apply px-3 py-2 text-xs; }
+@utility card { @apply rounded-[10px] border border-black/[0.06] bg-white shadow-[0_1px_2px_rgba(11,26,51,0.04),0_8px_24px_-12px_rgba(11,26,51,0.12)]; }
+@utility input { @apply w-full rounded-md border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-ink placeholder:text-slate-400 transition focus:border-navy focus:outline-none focus:ring-2 focus:ring-navy/15 disabled:bg-slate-50; }
+@utility label { @apply mb-1.5 block text-sm font-medium text-ink; }
+@utility link-gold { @apply inline-flex items-center gap-1.5 text-sm font-semibold text-navy underline decoration-gold decoration-2 underline-offset-[6px] hover:text-gold; }
+@utility section { @apply py-16 sm:py-20 lg:py-24; }
+@utility h2 { @apply text-[26px] leading-tight font-extrabold text-navy-dark sm:text-[34px]; }
+
+.reveal { animation: reveal 0.7s cubic-bezier(.2,.7,.2,1) both; }
+.reveal-delay-1 { animation-delay: .08s; } .reveal-delay-2 { animation-delay: .16s; } .reveal-delay-3 { animation-delay: .24s; }
+@keyframes reveal { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+.hero-zoom { animation: heroZoom 18s ease-out both; }
+@keyframes heroZoom { from { transform: scale(1.08); } to { transform: scale(1); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+
+@media print {
+  header, footer, .no-print { display: none !important; }
+  body { background: white; }
+}

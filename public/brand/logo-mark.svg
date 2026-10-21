@@ -1,0 +1,10 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="GSI logo placeholder">
+  <!-- Placeholder emblem. Upload the official logo in Admin > Settings to replace it. -->
+  <circle cx="60" cy="60" r="56" fill="#fff" stroke="#14294F" stroke-width="7"/>
+  <circle cx="60" cy="60" r="47" fill="none" stroke="#C9A54C" stroke-width="2.5"/>
+  <path d="M28 66c0-20 14-34 32-34s32 14 32 34H28z" fill="#14294F"/>
+  <rect x="24" y="64" width="72" height="7" rx="3" fill="#14294F"/>
+  <path d="M34 92C52 78 66 62 82 38" fill="none" stroke="#C9A54C" stroke-width="7" stroke-linecap="round"/>
+  <path d="M74 34l14-2-3 14z" fill="#C9A54C"/>
+  <path d="M46 96c14-12 26-26 38-44" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+</svg>
