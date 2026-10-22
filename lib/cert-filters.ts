@@ -21,7 +21,7 @@ export async function buildCertificateFilter(u: SessionUser, p: CertFilterParams
     const r = { $regex: escapeRegex(p.category.slice(0, 80)), $options: "i" };
     const cats = await Category.distinct("_id", { $or: [{ name: r }, { shortName: r }, { code: r }] });
     const courses = await Course.distinct("_id", { $or: [{ name: r }, { category: { $in: cats } }] });
-    and.push({ $or: [{ course: { $in: courses } }, { level: r }] });
+    and.push({ $or: [{ course: { $in: courses } }, { courseName: r }, { level: r }] });
   }
   // Location filter narrows within scope; the scope clause above still applies.
   if (p.location && isValidObjectId(p.location)) and.push({ location: new Types.ObjectId(p.location) });

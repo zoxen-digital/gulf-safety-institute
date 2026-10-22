@@ -62,7 +62,7 @@ export default async function TraineeDetail({ params, searchParams }: { params: 
                 return (
                   <tr key={String(c._id)}>
                     <td className={td}><Link href={`/admin/certificates/${c._id}`} className="font-mono font-semibold text-navy hover:underline">{c.certificateNumber}</Link></td>
-                    <td className={td}>{course?.name}</td><td className={td}>{loc?.name}</td>
+                    <td className={td}>{c.courseName || course?.name}</td><td className={td}>{loc?.name}</td>
                     <td className={td}>{fmtDate(c.issueDate)}</td><td className={td}>{fmtDate(c.expiryDate)}</td>
                     <td className={td}><Badge value={displayStatus(c.status, c.expiryDate)} /></td>
                   </tr>

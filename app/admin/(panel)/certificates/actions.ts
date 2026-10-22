@@ -1,6 +1,6 @@
 "use server";
 import { z } from "zod";
-import { ClientError, guarded, oid, str, toDate, type ActionResult } from "@/lib/admin";
+import { ClientError, escapeRegex, guarded, oid, str, toDate, type ActionResult } from "@/lib/admin";
 import { Certificate, Course, Location, Trainee, Trainer } from "@/lib/models";
 import { canAccessLocation } from "@/lib/permissions";
 import type { SessionUser } from "@/lib/auth";
@@ -27,8 +27,11 @@ export async function saveCertificate(_: ActionResult, fd: FormData): Promise<Ac
     if (!canAccessLocation(u, String(location))) throw new ClientError("You cannot issue certificates for that location");
     if (!(await Location.exists({ _id: location }))) throw new ClientError("Location not found");
 
-    const course = oid(str(fd, "course"));
-    if (!(await Course.exists({ _id: course }))) throw new ClientError("Course not found");
+    // Course is free text; link to the catalog course when the name matches exactly (case-insensitive).
+    const courseName = str(fd, "courseName", 200);
+    if (courseName.length < 2) return { ok: false, message: "Please correct the highlighted fields.", errors: { courseName: "Enter the course name" } };
+    const matched = await Course.findOne({ name: { $regex: `^${escapeRegex(courseName)}$`, $options: "i" } }).select("_id").lean();
+    const course = matched?._id;
     const trainerId = str(fd, "trainer"), approverId = str(fd, "approver");
     const trainer = trainerId ? oid(trainerId) : undefined;
     const approver = approverId ? oid(approverId) : undefined;
@@ -72,7 +75,7 @@ export async function saveCertificate(_: ActionResult, fd: FormData): Promise<Ac
       if (!certificateNumber) return { ok: false, message: "Invalid certificate number", errors: { certificateNumber: "Letters, digits and dashes only" } };
     }
 
-    const doc: Record<string, unknown> = { ...f, trainee, course, location, trainer, approver, issueDate, expiryDate, trainingStartDate, trainingEndDate };
+    const doc: Record<string, unknown> = { ...f, trainee, course: course ?? null, courseName, location, trainer, approver, issueDate, expiryDate, trainingStartDate, trainingEndDate };
 
     if (id) {
       const prev = await Certificate.findOne({ _id: oid(id), deletedAt: null }).lean();

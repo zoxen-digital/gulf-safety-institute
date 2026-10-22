@@ -21,7 +21,7 @@ export async function certificateFormOptions(u: SessionUser, include: { course?:
   ]);
   const code = (id: unknown) => cats.find((c) => String(c._id) === String(id))?.code || "";
   return {
-    courses: courses.map((c) => ({ value: String(c._id), label: `${code(c.category)} · ${c.name}`, validity: c.defaultValidityMonths })),
+    courses: courses.map((c) => ({ value: String(c._id), label: `${code(c.category)} · ${c.name}`, name: c.name, validity: c.defaultValidityMonths })),
     locations: locs.map((l) => ({ value: String(l._id), label: `${l.name}${l.isActive ? "" : " (inactive)"}` })),
     trainers: people.filter((p) => p.type === "TRAINER").map((p) => ({ value: String(p._id), label: p.name })),
     approvers: people.filter((p) => p.type === "APPROVER").map((p) => ({ value: String(p._id), label: p.name })),

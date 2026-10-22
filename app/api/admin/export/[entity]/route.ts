@@ -42,7 +42,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ entity: 
         const co = c.course as unknown as { name: string; category?: { code: string } } | null;
         return {
           certificate_number: c.certificateNumber, trainee_name: t?.fullName, id_number: t?.idNumber, nationality: t?.nationality,
-          course: co?.name, category: co?.category?.code, level: c.level, company: c.company, project: c.project,
+          course: c.courseName || co?.name, category: co?.category?.code, level: c.level, company: c.company, project: c.project,
           location: (c.location as unknown as { name: string } | null)?.name, trainer: (c.trainer as unknown as { name: string } | null)?.name,
           approver: (c.approver as unknown as { name: string } | null)?.name, enrollment_number: c.enrollmentNumber,
           training_start: d(c.trainingStartDate), training_end: d(c.trainingEndDate), issue_date: d(c.issueDate), expiry_date: d(c.expiryDate),

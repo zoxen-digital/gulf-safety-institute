@@ -36,6 +36,7 @@ type Populated = {
   location: { _id: unknown; name: string; city: string; country: string } | null;
   trainee: { fullName: string; idNumber: string; nationality?: string; photoUrl?: string; company?: string } | null;
   course: { name: string; category: { name: string; shortName?: string } | null } | null;
+  courseName?: string;
   trainer: { name: string; signatureUrl?: string; designation?: string } | null;
   approver: { name: string; signatureUrl?: string; designation?: string } | null;
 };
@@ -60,7 +61,7 @@ export async function loadCertificate(filter: { certificateNumber?: string; _id?
     .populate("trainer", "name signatureUrl designation")
     .populate("approver", "name signatureUrl designation")
     .lean()) as unknown as Populated | null;
-  if (!c || !c.trainee || !c.course) return null;
+  if (!c || !c.trainee || (!c.course && !c.courseName)) return null;
   return {
     id: String(c._id),
     locationId: String(c.location?._id || ""),
@@ -76,7 +77,7 @@ export async function loadCertificate(filter: { certificateNumber?: string; _id?
     trainingEndDate: c.trainingEndDate,
     isDemo: c.isDemo,
     trainee: c.trainee,
-    course: { name: c.course.name, categoryName: c.course.category?.shortName || c.course.category?.name },
+    course: { name: c.courseName || c.course?.name || "", categoryName: c.course?.category?.shortName || c.course?.category?.name },
     location: c.location,
     trainer: c.trainer,
     approver: c.approver,

@@ -70,7 +70,7 @@ export default async function CertificatesAdmin({ searchParams }: { searchParams
                   <tr key={String(c._id)} className="hover:bg-slate-50">
                     <td className={td}><Link href={`/admin/certificates/${c._id}`} className="font-mono text-xs font-bold text-navy hover:underline">{c.certificateNumber}</Link>{c.isDemo && <span className="ml-1.5"><Badge value="DEMO" /></span>}</td>
                     <td className={td}><div className="flex items-center gap-2.5"><span className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full bg-slate-100"><SafeImage src={t?.photoUrl} alt="" fill sizes="32px" className="object-cover" /></span><div><p className="font-medium">{t?.fullName}</p><p className="font-mono text-[11px] text-muted">{t?.idNumber}</p></div></div></td>
-                    <td className={`${td} max-w-[220px]`}><p className="line-clamp-2">{co?.name}</p></td>
+                    <td className={`${td} max-w-[220px]`}><p className="line-clamp-2">{c.courseName || co?.name}</p></td>
                     <td className={td}>{c.company || "-"}</td>
                     <td className={td}>{lo?.name}</td>
                     <td className={`${td} whitespace-nowrap`}>{fmtDate(c.issueDate)}</td>

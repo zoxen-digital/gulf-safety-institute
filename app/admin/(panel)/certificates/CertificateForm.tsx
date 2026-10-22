@@ -70,7 +70,7 @@ function TraineePicker({ initial }: { initial?: { id: string; label: string } })
   );
 }
 
-export function CertificateForm({ v, courses, locations, trainers, approvers }: { v: CertFormValues; courses: (Opt & { validity: number })[]; locations: Opt[]; trainers: Opt[]; approvers: Opt[] }) {
+export function CertificateForm({ v, courses, locations, trainers, approvers }: { v: CertFormValues; courses: (Opt & { validity: number; name: string })[]; locations: Opt[]; trainers: Opt[]; approvers: Opt[] }) {
   const [mode, setMode] = useState<"existing" | "new">(v.trainee || v.id ? "existing" : "existing");
   const [course, setCourse] = useState(v.course);
   const [issue, setIssue] = useState(v.issueDate);
@@ -78,7 +78,7 @@ export function CertificateForm({ v, courses, locations, trainers, approvers }: 
   const [touchedExpiry, setTouchedExpiry] = useState(Boolean(v.id));
   useEffect(() => {
     if (touchedExpiry) return;
-    const m = courses.find((c) => c.value === course)?.validity;
+    const m = courses.find((c) => c.name.toLowerCase() === course.trim().toLowerCase())?.validity;
     if (m && issue) setExpiry(addMonths(issue, m));
   }, [course, issue, touchedExpiry, courses]);
 
@@ -117,7 +117,10 @@ export function CertificateForm({ v, courses, locations, trainers, approvers }: 
 
       <fieldset className="grid gap-5 rounded-[10px] border border-slate-200 bg-white p-5 md:grid-cols-2">
         <legend className="px-1 font-heading text-sm font-bold text-navy-dark">Certification</legend>
-        <SelectField name="course" label="Course" value={course} onChange={(e) => setCourse(e.target.value)} options={courses} placeholder="Select course" required className="md:col-span-2" />
+        <div className="md:col-span-2">
+          <TextField name="courseName" label="Course name" value={course} onChange={(e) => setCourse(e.target.value)} list="course-suggestions" placeholder="Type the course name, e.g. Rigger Level III Training" required autoComplete="off" help="Type any course. Suggestions from the course list appear while typing." />
+          <datalist id="course-suggestions">{courses.map((c) => <option key={c.value} value={c.name} />)}</datalist>
+        </div>
         <TextField name="level" label="Category (free text)" defaultValue={v.level} placeholder="e.g. Level III, Up to 5 Ton" help="Type anything. Shown on the certificate and QR page." />
         <SelectField name="location" label="Training location" defaultValue={v.location} options={locations} placeholder="Select location" required />
         <TextField name="company" label="Company / Employer" defaultValue={v.company} />

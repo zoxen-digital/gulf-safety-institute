@@ -79,7 +79,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     return (
       <tr key={String(c._id)}>
         <td className={td}><Link href={`/admin/certificates/${c._id}`} className="font-mono text-xs font-bold text-navy hover:underline">{c.certificateNumber}</Link></td>
-        <td className={td}><p className="font-medium">{t?.fullName}</p><p className="line-clamp-1 text-xs text-muted">{co?.name}</p></td>
+        <td className={td}><p className="font-medium">{t?.fullName}</p><p className="line-clamp-1 text-xs text-muted">{c.courseName || co?.name}</p></td>
         <td className={`${td} whitespace-nowrap text-xs`}>{fmtDate(showExpiry ? c.expiryDate : c.issueDate)}</td>
         <td className={td}><Badge value={displayStatus(c.status, c.expiryDate)} /></td>
       </tr>

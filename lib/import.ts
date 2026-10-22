@@ -83,7 +83,8 @@ export async function validateRows(u: SessionUser, rows: Record<string, string>[
     const errors: string[] = [];
     for (const c of REQUIRED) if (!d[c]) errors.push(`${c} is required`);
     const course = courses.find((c) => norm(c.name) === norm(d.course || "") || c.slug === slugify(d.course || ""));
-    if (d.course && !course) errors.push(`Unknown course "${d.course}"`);
+    // Any course name is accepted; it links to the catalog when it matches. Expiry is then required.
+    if (d.course && !course && !d.expiry_date) errors.push(`expiry_date is required for course "${d.course}" (not in the course list)`);
     const loc = locations.find((l) => norm(l.name) === norm(d.location || "") || norm(l.city) === norm(d.location || ""));
     if (d.location && !loc) errors.push(`Unknown location "${d.location}"`);
     else if (loc && !canAccessLocation(u, String(loc._id))) errors.push(`You are not allowed to import for location "${d.location}"`);
@@ -125,7 +126,7 @@ export async function validateRows(u: SessionUser, rows: Record<string, string>[
       row: i + 2,
       data: d,
       errors,
-      resolved: errors.length ? undefined : { course: course!._id, location: loc!._id, trainer: trainer?._id, approver: approver?._id, issue, expiry, ts, te, number, idn, existingTrainee: ex?._id },
+      resolved: errors.length ? undefined : { course: course?._id, courseName: course?.name || d.course, location: loc!._id, trainer: trainer?._id, approver: approver?._id, issue, expiry, ts, te, number, idn, existingTrainee: ex?._id },
     });
   });
   return result;
@@ -150,7 +151,7 @@ export async function commitRows(u: SessionUser, rows: Awaited<ReturnType<typeof
       const issue = x.issue as unknown as Date;
       const certificateNumber = (x.number as string) || (await nextCertificateNumber(issue.getUTCFullYear()));
       await Certificate.create({
-        certificateNumber, trainee, course: x.course, location: x.location, trainer: x.trainer, approver: x.approver,
+        certificateNumber, trainee, course: x.course, courseName: x.courseName, location: x.location, trainer: x.trainer, approver: x.approver,
         level: r.data.level || "", company: r.data.company || r.data.trainee_company || "", project: r.data.project || "", enrollmentNumber: r.data.enrollment_number || "",
         trainingStartDate: x.ts || undefined, trainingEndDate: x.te || undefined, issueDate: issue, expiryDate: x.expiry, status: "VALID", createdBy: u.id,
       });

@@ -118,7 +118,9 @@ const CertificateSchema = new Schema(
   {
     certificateNumber: { type: String, required: true, unique: true, uppercase: true, trim: true },
     trainee: { type: ObjectId, ref: "Trainee", required: true, index: true },
-    course: { type: ObjectId, ref: "Course", required: true, index: true },
+    // Course is typed manually (courseName). It links to a catalog course when the name matches one.
+    course: { type: ObjectId, ref: "Course", index: true },
+    courseName: { type: String, default: "", trim: true },
     location: { type: ObjectId, ref: "Location", required: true, index: true },
     trainer: { type: ObjectId, ref: "Trainer" },
     approver: { type: ObjectId, ref: "Trainer" },
