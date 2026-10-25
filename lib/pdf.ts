@@ -93,6 +93,11 @@ async function brandImages(doc: PDFDocument, s: SiteSettings) {
     const img = await embedStored(doc, u);
     if (img) accreditations.push(img);
   }
+  // No uploaded logos: use the bundled accreditation strip as one image.
+  if (!accreditations.length) {
+    const strip = await embedStored(doc, "/brand/gsi-accreditations.png");
+    if (strip) accreditations.push(strip);
+  }
   // Uploaded stamp/signature win; otherwise the bundled GSI ones are used.
   const stamp = (await embedStored(doc, s.stampUrl)) || (await embedStored(doc, "/brand/gsi-stamp.png"));
   const signature = (await embedStored(doc, s.signatureUrl)) || (await embedStored(doc, "/brand/gsi-signature.png"));
@@ -229,7 +234,12 @@ async function drawCard(page: PDFPage, doc: PDFDocument, rec: FullRecord, s: Sit
   const botY = 12; // back panel bottom
 
   page.drawRectangle({ x: 0, y: 0, width: W, height: H, color: WHITE });
-  for (const y of [topY, botY]) page.drawRectangle({ x: x0, y, width: pw, height: panelH, color: LIGHT, borderColor: NAVY, borderWidth: 1 });
+  for (const y of [topY, botY]) {
+    page.drawRectangle({ x: x0, y, width: pw, height: panelH, color: LIGHT, borderColor: NAVY, borderWidth: 1 });
+    // Filled background: light side band plus a faint repeating emblem.
+    page.drawRectangle({ x: x0 + pw * 0.55, y: y + 1, width: pw * 0.45 - 1, height: panelH - 2, color: rgb(0.88, 0.93, 0.98) });
+    if (b.icon) for (let r = 0, yy = y + 18; yy < y + panelH - 30; r++, yy += 46) for (let xx = x0 + 14 + (r % 2) * 23; xx < x0 + pw - 30; xx += 46) contain(page, b.icon, xx, yy, 22, 22, 0.05);
+  }
 
   // ---------- FRONT ----------
   const headH = 78;
@@ -251,12 +261,17 @@ async function drawCard(page: PDFPage, doc: PDFDocument, rec: FullRecord, s: Sit
   course.forEach((l, i) => headLine(l, topY + panelH - 46 - i * 17, 14));
 
   // Photo + certificate number.
-  const phX = x0 + 14, phY = topY + 92, phW = 92, phH = 112;
+  const phX = x0 + 14, phY = topY + 112, phW = 84, phH = 88;
   page.drawRectangle({ x: phX, y: phY, width: phW, height: phH, color: WHITE, borderColor: NAVY, borderWidth: 0.6 });
   const photo = await embedStored(doc, rec.trainee.photoUrl);
   if (photo) contain(page, photo, phX + 2, phY + 2, phW - 4, phH - 4);
-  else page.drawText("PHOTO", { x: phX + 28, y: phY + 52, size: 9, font: f.reg, color: MUTED });
-  page.drawText(safe(rec.certificateNumber), { x: phX, y: phY - 14, size: 11, font: f.bold, color: NAVY_DARK });
+  else page.drawText("PHOTO", { x: phX + 24, y: phY + 40, size: 9, font: f.reg, color: MUTED });
+  page.drawText(safe(rec.certificateNumber), { x: phX, y: phY - 12, size: 10, font: f.bold, color: NAVY_DARK });
+  // Authorized signature under the photo.
+  if (b.signature) contain(page, b.signature, phX, topY + 72, phW, 22);
+  page.drawLine({ start: { x: phX, y: topY + 70 }, end: { x: phX + phW, y: topY + 70 }, thickness: 0.5, color: NAVY_DARK });
+  const sigCap = fit((s.signatureLabel || "Authorized Signature").toUpperCase(), f.bold, 5.5, phW);
+  page.drawText(sigCap, { x: phX + (phW - f.bold.widthOfTextAtSize(sigCap, 5.5)) / 2, y: topY + 63, size: 5.5, font: f.bold, color: NAVY_DARK });
 
   const rows: [string, string][] = [
     ["NAME", rec.trainee.fullName.toUpperCase()],
@@ -277,12 +292,13 @@ async function drawCard(page: PDFPage, doc: PDFDocument, rec: FullRecord, s: Sit
     page.drawText(fit(v, f.bold, 10.5, dMax + 70 - lw), { x: dx + lw, y, size: 10.5, font: f.bold, color: NAVY_DARK });
   });
   const qr = await doc.embedPng(await qrPng(rec.certificateNumber));
-  page.drawImage(qr, { x: x0 + pw - 74, y: topY + 62, width: 62, height: 62 });
+  page.drawImage(qr, { x: x0 + pw - 74, y: topY + 66, width: 60, height: 60 });
 
   // Logo strip + contact line.
-  accreditationRow(page, b.accreditations, x0 + 14, topY + 36, pw - 100, 22);
+  page.drawRectangle({ x: x0 + 1, y: topY + 25, width: pw - 2, height: 34, color: WHITE });
+  accreditationRow(page, b.accreditations, x0 + 14, topY + 27, pw - 28, 30);
   const contact = [s.address, s.phone && `Tel: ${s.phone}`, s.email && `Email: ${s.email}`, siteText(s) && `Website: ${siteText(s)}`].filter(Boolean).join(" | ");
-  if (contact) wrap(contact, f.bold, 7, pw - 28).slice(0, 2).forEach((l, i) => page.drawText(l, { x: x0 + (pw - f.bold.widthOfTextAtSize(l, 7)) / 2, y: topY + 22 - i * 9, size: 7, font: f.bold, color: NAVY_DARK }));
+  if (contact) wrap(contact, f.bold, 7, pw - 28).slice(0, 2).forEach((l, i) => page.drawText(l, { x: x0 + (pw - f.bold.widthOfTextAtSize(l, 7)) / 2, y: topY + 15 - i * 8.5, size: 7, font: f.bold, color: NAVY_DARK }));
 
   // ---------- BACK ----------
   const by = botY + panelH;
@@ -302,7 +318,8 @@ async function drawCard(page: PDFPage, doc: PDFDocument, rec: FullRecord, s: Sit
     page.drawText(fit(rec.enrollmentNumber, f.bold, 10.5, 80), { x: x0 + pw - 90, y: by - 66, size: 10.5, font: f.bold, color: NAVY_DARK });
   }
   // Stamp on the left; signature and validation text centred in the space to its right.
-  if (seal) contain(page, seal, x0 + 14, botY + 62, 112, 112, 0.95);
+  if (seal) contain(page, seal, x0 + 16, botY + 76, 104, 104, 0.95);
+  if (s.certificationsText) center(s.certificationsText.toUpperCase(), botY + 60, 10, f.bold);
   const rx = x0 + 135, rw = pw - 145;
   const rightCenter = (t: string, y: number, size: number, color = NAVY_DARK) => {
     const txt = fit(t, f.bold, size, rw);

@@ -53,8 +53,9 @@ export async function saveSettings(_: ActionResult, fd: FormData): Promise<Actio
         signatureLabel: z.string().max(60),
         supervisionText: z.string().max(160),
         certificateWebsite: z.string().max(80),
+        certificationsText: z.string().max(160),
       })
-      .parse({ signatureUrl: str(fd, "signatureUrl"), signatureLabel: str(fd, "signatureLabel") || "Authorized Signature", supervisionText: str(fd, "supervisionText"), certificateWebsite: str(fd, "certificateWebsite") });
+      .parse({ signatureUrl: str(fd, "signatureUrl"), signatureLabel: str(fd, "signatureLabel") || "Authorized Signature", supervisionText: str(fd, "supervisionText"), certificateWebsite: str(fd, "certificateWebsite"), certificationsText: str(fd, "certificationsText") });
     const accreditationLogos = [0, 1, 2, 3, 4, 5].map((i) => str(fd, `accreditationLogos.${i}`, 400)).filter(Boolean);
     const publicShowFullId = fd.get("publicShowFullId") === "on";
 

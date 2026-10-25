@@ -42,13 +42,14 @@ export function SettingsForm({ s }: { s: SiteSettings }) {
         <TextField name="supervisionText" label='"Under the supervision of" text' defaultValue={s.supervisionText} className="md:col-span-2" help="Optional. e.g. the authority you train under. Leave blank to hide the line. Only enter bodies you are actually approved by." />
         <TextField name="certificateWebsite" label="Website shown on certificate" defaultValue={s.certificateWebsite} placeholder="www.gulfsafetyinstitute.com" help="Leave blank to use the site address." />
         <TextField name="signatureLabel" label="Signature caption" defaultValue={s.signatureLabel} />
+        <TextField name="certificationsText" label="Certifications line (card)" defaultValue={s.certificationsText} placeholder="ISO 9001:2015, ISO 45001:2018 CERTIFIED" help="Printed on the back of the card. Only list certifications GSI actually holds. Leave blank to hide." className="md:col-span-2" />
         <AdminImageField name="signatureUrl" label="Authorized signature" folder="misc" defaultValue={s.signatureUrl} fit="contain" aspect="aspect-[3/1] max-w-[220px]" help="Transparent PNG. Printed in the centre of the certificate." />
         <div className="flex items-end">
           <Checkbox name="publicShowFullId" label="Show full ID / Iqama number on QR page and PDFs" defaultChecked={s.publicShowFullId} help="Off = show a masked number (e.g. 26******77)." />
         </div>
         <div className="md:col-span-2">
           <p className="label">Accreditation / partner logos (bottom row)</p>
-          <p className="mb-3 text-xs text-muted">Up to 6 logos, PNG or JPEG. Upload only logos of bodies that have approved GSI.</p>
+          <p className="mb-3 text-xs text-muted">Up to 6 logos, PNG or JPEG. Upload only logos of bodies that have approved GSI. If none are uploaded, the bundled strip (TVTC, IQ-OHS, Highfield, IBHSE) is used.</p>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {[0, 1, 2, 3, 4, 5].map((i) => (
               <AdminImageField key={i} name={`accreditationLogos.${i}`} label={`Logo ${i + 1}`} folder="misc" defaultValue={s.accreditationLogos[i] || ""} fit="contain" aspect="aspect-[5/2] max-w-[200px]" help="PNG or JPEG" />

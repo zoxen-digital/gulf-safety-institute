@@ -157,6 +157,8 @@ export const DEFAULT_SETTINGS = {
   supervisionText: "",
   certificateWebsite: "",
   accreditationLogos: [] as string[],
+  // e.g. "ISO 9001:2015, ISO 45001:2018 CERTIFIED" – printed on the card. Only enter certifications GSI actually holds.
+  certificationsText: "",
   // Client requirement: the QR landing page and PDFs show the full ID number.
   publicShowFullId: true,
   phone: "",
