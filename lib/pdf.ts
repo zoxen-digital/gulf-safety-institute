@@ -130,7 +130,7 @@ export async function certificatePdf(rec: FullRecord, settings: SiteSettings, ct
   };
   const brand = await brandImages(doc, settings);
   await drawCertificate(doc.addPage([595.28, 841.89]), doc, rec, settings, ctx, fonts, brand);
-  await drawCard(doc.addPage([595.28, 375]), doc, rec, settings, ctx, fonts, brand);
+  await drawCard(doc.addPage([440, 600]), doc, rec, settings, ctx, fonts, brand);
   return doc.save();
 }
 
@@ -141,7 +141,7 @@ export async function idCardPdf(rec: FullRecord, settings: SiteSettings, ctx: Pd
   doc.setAuthor(settings.instituteFullName);
   doc.setKeywords([]);
   const fonts = { reg: await doc.embedFont(StandardFonts.Helvetica), bold: await doc.embedFont(StandardFonts.HelveticaBold), title: await doc.embedFont(StandardFonts.TimesRomanBold) };
-  await drawCard(doc.addPage([595.28, 375]), doc, rec, settings, ctx, fonts, await brandImages(doc, settings));
+  await drawCard(doc.addPage([440, 600]), doc, rec, settings, ctx, fonts, await brandImages(doc, settings));
   return doc.save();
 }
 
@@ -216,48 +216,108 @@ async function drawCertificate(page: PDFPage, doc: PDFDocument, rec: FullRecord,
   if (displayStatus(rec.status, rec.expiryDate) === "EXPIRED") center("EXPIRED", H / 2, 90, f.bold, rgb(0.85, 0.2, 0.2));
 }
 
+/**
+ * Two-panel operator card (front on top, back below), modelled on the client's reference:
+ * navy header with the course title, photo + details, logo strip, then training & approval.
+ */
 async function drawCard(page: PDFPage, doc: PDFDocument, rec: FullRecord, s: SiteSettings, ctx: PdfContext, f: Fonts, b: Brand) {
   const W = page.getWidth(), H = page.getHeight();
+  const LIGHT = rgb(0.93, 0.96, 0.99);
+  const panelH = (H - 30) / 2;
+  const x0 = 12, pw = W - 24;
+  const topY = H - 12 - panelH; // front panel bottom
+  const botY = 12; // back panel bottom
+
   page.drawRectangle({ x: 0, y: 0, width: W, height: H, color: WHITE });
-  // Header: emblem + institute name.
-  if (b.icon) contain(page, b.icon, 18, H - 72, 60, 60);
-  const name = fit(s.instituteFullName.toUpperCase(), f.bold, 22, W - 120);
-  page.drawText(name, { x: 88, y: H - 44, size: 22, font: f.bold, color: NAVY_DARK });
-  page.drawLine({ start: { x: 88, y: H - 52 }, end: { x: 88 + f.bold.widthOfTextAtSize(name, 22), y: H - 52 }, thickness: 1.5, color: GOLD });
-  const site = siteText(s);
-  if (site) page.drawText(fit(site, f.reg, 10, W - 120), { x: 88, y: H - 68, size: 10, font: f.reg, color: MUTED });
+  for (const y of [topY, botY]) page.drawRectangle({ x: x0, y, width: pw, height: panelH, color: LIGHT, borderColor: NAVY, borderWidth: 1 });
+
+  // ---------- FRONT ----------
+  const headH = 78;
+  page.drawRectangle({ x: x0, y: topY + panelH - headH, width: pw, height: headH, color: NAVY });
+  const seal = b.stamp || b.icon;
+  if (b.icon) {
+    page.drawCircle({ x: x0 + 40, y: topY + panelH - headH / 2, size: 30, color: WHITE });
+    contain(page, b.icon, x0 + 16, topY + panelH - headH / 2 - 24, 48, 48);
+  }
+  const tx = x0 + 80, tw = pw - 92;
+  const headLine = (t: string, y: number, size: number) => {
+    let sz = size;
+    while (sz > 8 && f.bold.widthOfTextAtSize(safe(t), sz) > tw) sz -= 0.5;
+    const txt = fit(t, f.bold, sz, tw);
+    page.drawText(txt, { x: tx + (tw - f.bold.widthOfTextAtSize(txt, sz)) / 2, y, size: sz, font: f.bold, color: WHITE });
+  };
+  headLine(s.instituteFullName.toUpperCase(), topY + panelH - 24, 15);
+  const course = wrap(rec.course.name.toUpperCase(), f.bold, 14, tw).slice(0, 2);
+  course.forEach((l, i) => headLine(l, topY + panelH - 46 - i * 17, 14));
+
+  // Photo + certificate number.
+  const phX = x0 + 14, phY = topY + 92, phW = 92, phH = 112;
+  page.drawRectangle({ x: phX, y: phY, width: phW, height: phH, color: WHITE, borderColor: NAVY, borderWidth: 0.6 });
+  const photo = await embedStored(doc, rec.trainee.photoUrl);
+  if (photo) contain(page, photo, phX + 2, phY + 2, phW - 4, phH - 4);
+  else page.drawText("PHOTO", { x: phX + 28, y: phY + 52, size: 9, font: f.reg, color: MUTED });
+  page.drawText(safe(rec.certificateNumber), { x: phX, y: phY - 14, size: 11, font: f.bold, color: NAVY_DARK });
 
   const rows: [string, string][] = [
-    ["Certificate No:", rec.certificateNumber],
-    ["Name:", rec.trainee.fullName.toUpperCase()],
-    ["ID No:", idFor(rec, s, ctx)],
-    ["Course Name:", rec.course.name.toUpperCase()],
-    ["Issuance Date:", dDash(rec.issueDate)],
-    ["Expiry Date:", dDash(rec.expiryDate)],
+    ["NAME", rec.trainee.fullName.toUpperCase()],
+    ["ID NO", idFor(rec, s, ctx)],
+    ["ISSUED DATE", dDash(rec.issueDate).toUpperCase()],
+    ["EXPIRY DATE", dDash(rec.expiryDate).toUpperCase()],
+    ["COMPANY", (rec.company || rec.trainee.company || "PRIVATE").toUpperCase()],
+    ["PROJECT", (rec.project || "NA").toUpperCase()],
   ];
-  if (rec.company) rows.splice(3, 0, ["Company:", rec.company.toUpperCase()]);
-  const size = rows.length > 6 ? 12.5 : 13.5, step = rows.length > 6 ? 27 : 30;
+  if (rec.level) rows.splice(2, 0, ["CATEGORY", rec.level.toUpperCase()]);
+  const dx = phX + phW + 16, dMax = x0 + pw - 14 - dx - 70;
+  const step = rows.length > 6 ? 15.5 : 17;
   rows.forEach(([k, v], i) => {
-    const y = H - 102 - i * step;
-    page.drawText(k, { x: 22, y, size, font: f.bold, color: NAVY });
-    const kw = f.bold.widthOfTextAtSize(k, size) + 7;
-    const max = W - 170 - kw;
-    // Shrink long values (e.g. course names) before truncating them.
-    let vs = size - 0.5;
-    while (vs > 8.5 && f.bold.widthOfTextAtSize(safe(v), vs) > max) vs -= 0.5;
-    page.drawText(fit(v, f.bold, vs, max), { x: 22 + kw, y, size: vs, font: f.bold, color: TEXT });
+    const y = topY + panelH - headH - 22 - i * step;
+    const label = `${k}: `;
+    const lw = f.bold.widthOfTextAtSize(label, 10.5) + 4;
+    page.drawText(label, { x: dx, y, size: 10.5, font: f.bold, color: NAVY_DARK });
+    page.drawText(fit(v, f.bold, 10.5, dMax + 70 - lw), { x: dx + lw, y, size: 10.5, font: f.bold, color: NAVY_DARK });
   });
-
-  // Photo and QR on the right.
-  const photo = await embedStored(doc, rec.trainee.photoUrl);
-  if (photo) contain(page, photo, W - 125, H - 205, 105, 125);
-  else {
-    page.drawRectangle({ x: W - 118, y: H - 200, width: 92, height: 115, borderColor: MUTED, borderWidth: 0.6 });
-    page.drawText("PHOTO", { x: W - 90, y: H - 145, size: 9, font: f.reg, color: MUTED });
-  }
   const qr = await doc.embedPng(await qrPng(rec.certificateNumber));
-  page.drawImage(qr, { x: W - 112, y: 62, width: 82, height: 82 });
+  page.drawImage(qr, { x: x0 + pw - 74, y: topY + 62, width: 62, height: 62 });
 
-  accreditationRow(page, b.accreditations, 20, 10, W - 150, 44);
-  if (rec.isDemo) page.drawText("DEMO - NOT A VALID CREDENTIAL", { x: 22, y: 58, size: 9, font: f.bold, color: RED });
+  // Logo strip + contact line.
+  accreditationRow(page, b.accreditations, x0 + 14, topY + 36, pw - 100, 22);
+  const contact = [s.address, s.phone && `Tel: ${s.phone}`, s.email && `Email: ${s.email}`, siteText(s) && `Website: ${siteText(s)}`].filter(Boolean).join(" | ");
+  if (contact) wrap(contact, f.bold, 7, pw - 28).slice(0, 2).forEach((l, i) => page.drawText(l, { x: x0 + (pw - f.bold.widthOfTextAtSize(l, 7)) / 2, y: topY + 22 - i * 9, size: 7, font: f.bold, color: NAVY_DARK }));
+
+  // ---------- BACK ----------
+  const by = botY + panelH;
+  const center = (t: string, y: number, size: number, font: PDFFont, color = NAVY_DARK) => {
+    const txt = fit(t, font, size, pw - 24);
+    page.drawText(txt, { x: x0 + (pw - font.widthOfTextAtSize(txt, size)) / 2, y, size, font, color });
+  };
+  center("TRAINING & APPROVAL", by - 24, 13, f.bold);
+  const left: [string, string][] = [["TRAINED BY", rec.trainer?.name || "-"], ["APPROVED BY", rec.approver?.name || "-"]];
+  left.forEach(([k, v], i) => {
+    const y = by - 48 - i * 18, label = `${k} : `;
+    page.drawText(label, { x: x0 + 16, y, size: 10.5, font: f.bold, color: NAVY_DARK });
+    page.drawText(fit(v.toUpperCase(), f.bold, 10.5, pw - 190), { x: x0 + 16 + f.bold.widthOfTextAtSize(label, 10.5), y, size: 10.5, font: f.bold, color: NAVY_DARK });
+  });
+  if (rec.enrollmentNumber) {
+    page.drawText("ENR NO", { x: x0 + pw - 90, y: by - 48, size: 10.5, font: f.bold, color: NAVY_DARK });
+    page.drawText(fit(rec.enrollmentNumber, f.bold, 10.5, 80), { x: x0 + pw - 90, y: by - 66, size: 10.5, font: f.bold, color: NAVY_DARK });
+  }
+  // Stamp on the left; signature and validation text centred in the space to its right.
+  if (seal) contain(page, seal, x0 + 14, botY + 62, 112, 112, 0.95);
+  const rx = x0 + 135, rw = pw - 145;
+  const rightCenter = (t: string, y: number, size: number, color = NAVY_DARK) => {
+    const txt = fit(t, f.bold, size, rw);
+    page.drawText(txt, { x: rx + (rw - f.bold.widthOfTextAtSize(txt, size)) / 2, y, size, font: f.bold, color });
+  };
+  if (b.signature) contain(page, b.signature, rx + rw / 2 - 60, botY + 128, 120, 48);
+  page.drawLine({ start: { x: rx + rw / 2 - 70, y: botY + 124 }, end: { x: rx + rw / 2 + 70, y: botY + 124 }, thickness: 0.6, color: NAVY_DARK });
+  rightCenter("OFFICIAL CERTIFICATION VALIDATION", botY + 104, 10.5);
+  rightCenter(`CERTIFICATE NO: ${rec.certificateNumber}`, botY + 86, 10, RED);
+
+  // Disclaimer bar.
+  const barH = 52;
+  page.drawRectangle({ x: x0, y: botY, width: pw, height: barH, color: NAVY });
+  wrap(s.idCardDisclaimer.toUpperCase(), f.bold, 7.2, pw - 24).slice(0, 4).forEach((l, i) =>
+    page.drawText(l, { x: x0 + (pw - f.bold.widthOfTextAtSize(l, 7.2)) / 2, y: botY + barH - 13 - i * 10, size: 7.2, font: f.bold, color: WHITE }),
+  );
+  if (rec.isDemo) center("DEMO - NOT A VALID CREDENTIAL", topY + panelH - headH - 12, 9, f.bold, RED);
 }
